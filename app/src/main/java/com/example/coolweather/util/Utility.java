@@ -65,7 +65,6 @@ public class Utility {
         if (!TextUtils.isEmpty(response)){
             try {
                 JSONArray allCounties = new JSONArray(response);
-                System.out.println(allCounties);
                 for (int i=0;i<allCounties.length();i++){
                     JSONObject countObject = allCounties.getJSONObject(i);
                     Country country = new Country();

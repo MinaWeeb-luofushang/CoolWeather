@@ -9,11 +9,17 @@
     <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent">
+        <ImageView
+            android:id="@+id/bin_pic_img"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            />
         <fragment
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:id="@+id/choose_area_fragment"
-            android:name="com.example.coolweather.util.AreaFragment"
+            android:name="com.example.coolweather.util.ChooseAreaFragment"
             />
     </FrameLayout>
 

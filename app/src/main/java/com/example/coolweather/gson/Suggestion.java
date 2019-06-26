@@ -3,22 +3,25 @@ package com.example.coolweather.gson;
 import com.google.gson.annotations.SerializedName;
 
 public class Suggestion {
-    @SerializedName("suggestion")
+    @SerializedName("comf")
     public Comfort comfort;
+    @SerializedName("cw")
+    public CarWash carWash;
+
+    public Sport sport;
+
     public class Comfort{
         @SerializedName("txt")
         public String info;
     }
-    @SerializedName("cw")
-    public CarWash carWash;
     public class CarWash{
         @SerializedName("txt")
         public String info;
     }
-    @SerializedName("sport")
-    public Sport sport;
+
     public class Sport{
         @SerializedName("txt")
         public String info;
     }
+
 }

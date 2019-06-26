@@ -1,8 +1,7 @@
 package com.example.coolweather.util;
 
 import android.app.Fragment;
-import android.content.Context;
-import android.location.Address;
+import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -16,15 +15,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
-import androidx.appcompat.app.AlertDialog;
 
-import com.example.coolweather.MainActivity;
 import com.example.coolweather.R;
+import com.example.coolweather.WeatherActivity;
 import com.example.coolweather.db.City;
 import com.example.coolweather.db.Country;
 import com.example.coolweather.db.Province;
 
-import org.json.JSONObject;
 import org.litepal.crud.DataSupport;
 
 import java.io.IOException;
@@ -35,7 +32,7 @@ import okhttp3.Call;
 import okhttp3.Callback;
 import okhttp3.Response;
 
-public class AreaFragment extends Fragment {
+public class ChooseAreaFragment extends Fragment {
     //各个级别
     public static final int LEVEL_PROVINCE=0;
     public static final int LEVEL_CITY=1;
@@ -82,6 +79,13 @@ public class AreaFragment extends Fragment {
                 }else if(currentLevel==LEVEL_CITY){
                     selectorCity=cityList.get(position);
                     queryCounties();
+                }
+                else if (currentLevel==LEVEL_COUNTY){
+                    String weatherId = countryList.get(position).getWeatherId();
+                    Intent intent = new Intent(getActivity(), WeatherActivity.class);
+                    intent.putExtra("weather_id",weatherId);
+                    startActivity(intent);
+                    getActivity().finish();
                 }
             }
         });
@@ -203,4 +207,5 @@ public class AreaFragment extends Fragment {
             }
         });
     }
+
 }

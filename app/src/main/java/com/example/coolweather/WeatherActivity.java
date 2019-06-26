@@ -1,10 +1,13 @@
 package com.example.coolweather;
 
 import android.content.SharedPreferences;
+import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -12,6 +15,7 @@ import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import com.bumptech.glide.Glide;
 import com.example.coolweather.gson.Forecast;
 import com.example.coolweather.gson.Weather;
 import com.example.coolweather.util.HttpUtil;
@@ -24,6 +28,7 @@ import okhttp3.Callback;
 import okhttp3.Response;
 
 public class WeatherActivity extends AppCompatActivity {
+    private ImageView binPicImg;
     private ScrollView weatherLayout;
     private TextView titleCity;
     private TextView titleUpdateTime;
@@ -40,13 +45,19 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        if (Build.VERSION.SDK_INT>=21){
+            View decorView = getWindow().getDecorView();
+            decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
+            getWindow().setStatusBarColor(Color.TRANSPARENT);
+        }
         setContentView(R.layout.activity_weather);
         init();
     }
 
     private void init(){
+        binPicImg=findViewById(R.id.bin_pic_img);
         weatherLayout = findViewById(R.id.weather_layout);
-        titleCity = findViewById(R.id.title_text);
+        titleCity = findViewById(R.id.title_city);
         titleUpdateTime =findViewById(R.id.title_update_time);
         degreeText = findViewById(R.id.degree_text);
         weatherInfoText=findViewById(R.id.weather_info_text);
@@ -59,6 +70,7 @@ public class WeatherActivity extends AppCompatActivity {
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather",null);
+
         if (weatherString!=null){
             //有缓存显示
             Weather weather = Utility.handleWeatherResponse(weatherString);
@@ -66,14 +78,48 @@ public class WeatherActivity extends AppCompatActivity {
         }else {
             //去服务器查询
             String weatherId = getIntent().getStringExtra("weather_id");
-            System.out.println(weatherId);
             weatherLayout.setVisibility(View.INVISIBLE);
             requestWeather(weatherId);
         }
+
+        //每日意图
+        String bingPic = prefs.getString("bing_pic", null);
+        if (bingPic != null) {
+            System.out.println(bingPic);
+            //Glide.with(this).load(bingPic).into(binPicImg);
+        } else {
+            loadBingPic();
+        }
+
     }
+    //加载网络图片
+    private void loadBingPic() {
+        String requestBingPic = "http://guolin.tech/api/bing_pic";
+        HttpUtil.sentOkHttpRequest(requestBingPic, new Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                final String bingPic = response.body().string();
+                SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
+                editor.putString("bing_pic",bingPic);
+                editor.apply();
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        Glide.with(WeatherActivity.this).load(bingPic).into(binPicImg);
+                    }
+                });
+            }
+        });
+    }
+
     //根据id请求天气信息
     private void requestWeather(final String weatherId) {
-        String weatherUrl = "Http//guolin.tech/api/weather?cityid="+weatherId+"&key=bc0418b57b2d4918819d3974ac1285d9";
+        System.out.println("根据id请求天气信息"+weatherId);
+        String weatherUrl = "http://guolin.tech/api/weather?cityid="+weatherId+"&key=bc0418b57b2d4918819d3974ac1285d9";
 
         HttpUtil.sentOkHttpRequest(weatherUrl, new Callback() {
             @Override
@@ -95,7 +141,7 @@ public class WeatherActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         if (weather!=null&&"ok".equals(weather.status)){
-                            SharedPreferences.Editor editor = (SharedPreferences.Editor) PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this);
+                            SharedPreferences.Editor editor = PreferenceManager.getDefaultSharedPreferences(WeatherActivity.this).edit();
                             editor.putString("weather",responseText);
                             editor.apply();
                             showWeatherInfo(weather);
@@ -107,19 +153,23 @@ public class WeatherActivity extends AppCompatActivity {
 
             }
         });
-
-
+        loadBingPic();
     }
 
     //处理实体类 展示
     private void showWeatherInfo(Weather weather) {
 
+
         String cityName = weather.basic.cityName;
-        String updateTime = weather.basic.update.updateTime.split("")[1];
+        String updateTime = weather.basic.update.updateTime.split("")[7];
+        String updateTime1 = weather.basic.update.updateTime.split("")[8];
+        String updateTime2 = weather.basic.update.updateTime.split("")[9];
+        String updateTime3 = weather.basic.update.updateTime.split("")[10];
+
         String degree = weather.now.temperature+"摄氏度";
         String weatherInfo = weather.now.more.info;
         titleCity.setText(cityName);
-        titleUpdateTime.setText(updateTime);
+        titleUpdateTime.setText(updateTime+updateTime1+updateTime2+updateTime3);
         degreeText.setText(degree);
         weatherInfoText.setText(weatherInfo);
         forecastLayout.removeAllViews();
@@ -137,7 +187,7 @@ public class WeatherActivity extends AppCompatActivity {
             forecastLayout.addView(view);
         }
         if (weather.aqi!=null){
-            aqiText.setText(weather.aqi.city.api);
+            aqiText.setText(weather.aqi.city.aqi);
             pm25Text.setText(weather.aqi.city.pm25);
         }
         String comfort = "舒适度："+weather.suggestion.comfort.info;
