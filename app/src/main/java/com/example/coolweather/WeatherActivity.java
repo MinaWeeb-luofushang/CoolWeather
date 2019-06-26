@@ -60,6 +60,7 @@ public class WeatherActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        //判断版本 透明度
         if (Build.VERSION.SDK_INT>=21){
             View decorView = getWindow().getDecorView();
             decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_STABLE);
@@ -73,7 +74,8 @@ public class WeatherActivity extends AppCompatActivity {
         drawerLayout=findViewById(R.id.drawer_layout);
         navButton=findViewById(R.id.nav_button);
         swipeRefresh=findViewById(R.id.swipe_refresh);
-        swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
+        //图标颜色
+        swipeRefresh.setColorSchemeResources(R.color.swipeRefresh);
 
         weatherLayout = findViewById(R.id.weather_layout);
         titleCity = findViewById(R.id.title_city);
@@ -123,7 +125,6 @@ public class WeatherActivity extends AppCompatActivity {
                 drawerLayout.openDrawer(GravityCompat.START);
             }
         });
-
     }
     //加载网络图片
     private void loadBingPic() {
