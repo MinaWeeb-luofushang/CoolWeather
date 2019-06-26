@@ -2,7 +2,13 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/colorPrimary">
+    >
+    <ImageView
+        android:id="@+id/bg_pic_img"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scaleType="centerCrop"
+        />
     <androidx.drawerlayout.widget.DrawerLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
@@ -14,10 +20,12 @@
         android:layout_width="match_parent"
         android:background="@color/colorPrimary"
         android:layout_height="match_parent">
+
+
     <ScrollView
         android:id="@+id/weather_layout"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:scrollbars="none"
         android:orientation="vertical"
         android:overScrollMode="never"

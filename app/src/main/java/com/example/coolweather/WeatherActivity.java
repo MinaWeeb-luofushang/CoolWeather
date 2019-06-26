@@ -39,7 +39,9 @@ public class WeatherActivity extends AppCompatActivity {
     //下拉刷新
     public SwipeRefreshLayout swipeRefresh;
     private String mWeatherId;
-    private ImageView binPicImg;
+    //网络背景图
+    public ImageView bgPicImg;
+
     private ScrollView weatherLayout;
     private TextView titleCity;
     private TextView titleUpdateTime;
@@ -70,7 +72,7 @@ public class WeatherActivity extends AppCompatActivity {
         navButton=findViewById(R.id.nav_button);
         swipeRefresh=findViewById(R.id.swipe_refresh);
         swipeRefresh.setColorSchemeResources(R.color.colorPrimary);
-        binPicImg=findViewById(R.id.bin_pic_img);
+
         weatherLayout = findViewById(R.id.weather_layout);
         titleCity = findViewById(R.id.title_city);
         titleUpdateTime =findViewById(R.id.title_update_time);
@@ -82,6 +84,7 @@ public class WeatherActivity extends AppCompatActivity {
         comfortText=findViewById(R.id.comfort_text);
         carWashText=findViewById(R.id.car_wash_text);
         sportText=findViewById(R.id.sport_text);
+        bgPicImg=findViewById(R.id.bg_pic_img);
 
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(this);
         String weatherString = prefs.getString("weather",null);
@@ -99,9 +102,8 @@ public class WeatherActivity extends AppCompatActivity {
         }
         //每日意图
         String bingPic = prefs.getString("bing_pic", null);
-        if (bingPic != null) {
-            System.out.println(bingPic);
-            //Glide.with(this).load(bingPic).into(binPicImg);
+        if (bingPic!= null) {
+            Glide.with(this).load(bingPic).into(bgPicImg);
         } else {
             loadBingPic();
         }
@@ -138,7 +140,7 @@ public class WeatherActivity extends AppCompatActivity {
                 runOnUiThread(new Runnable() {
                     @Override
                     public void run() {
-                        //Glide.with(WeatherActivity.this).load(bingPic).into(binPicImg);
+                        Glide.with(WeatherActivity.this).load(bingPic).into(bgPicImg);
                     }
                 });
             }
